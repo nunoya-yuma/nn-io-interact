@@ -36,6 +36,17 @@ jobs:
           cd examples/
           pytest -v -s -m "simple_process_test and hard" tests/
 
+      - name: Setup virtual port
+        run: socat PTY,link=/tmp/ttyV0 PTY,link=/tmp/ttyV1 &
+      - name: Run example.py in advance
+        run: |
+         cd examples
+         ./example.py < /tmp/ttyV0 > /tmp/ttyV0 2>&1
+      - name: Run device tests
+        run: |
+          cd examples
+          pytest -v -s -m "device_test" tests/
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build the Docker image
